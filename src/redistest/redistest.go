@@ -17,11 +17,10 @@ func InitRedisClinet() *Client {
 	c := context.Background()
 
 	rdb := redis.NewClient(&redis.Options{
-        Addr:   "localhost:6379",
-        Password: "", // no password set
-        DB:    0,  // use default DB
-    })
-
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
 
 	// redisIPs := []string{"127.0.0.1:7000", "127.0.0.1:7001", "127.0.0.1:7002", "127.0.0.1:7003", "127.0.0.1:7004", "127.0.0.1:7005"}
 
@@ -60,6 +59,14 @@ func (r *Client) INCRBYExample(aa int) int64 {
 	return i
 }
 
+func (r *Client) PlayerCounts(playerID string) int64 {
+	i, err := r.Rdb.Incr(r.ctx, playerID).Result()
+	if err != nil {
+		panic(err)
+	}
+	return i
+}
+
 func (q *Client) INCRBYbank(amount int, playerid string) int64 {
 	i, err := q.Rdb.IncrBy(q.ctx, playerid, int64(amount)).Result()
 	if err != nil {
@@ -83,12 +90,12 @@ func (r *Client) INCRBYFLOAT(amount float64, playerid string) float64 {
 	}
 	return i
 }
-func (r *Client) SetValue(amount int64, playerid string) string  {
-	_, err := r.Rdb.Set(r.ctx, playerid, amount,-1).Result()
+func (r *Client) SetValue(amount int64, playerid string) string {
+	_, err := r.Rdb.Set(r.ctx, playerid, amount, -1).Result()
 	if err != nil {
 		panic((err))
 	}
-	q,err := r.Rdb.Get(r.ctx, playerid).Result()
+	q, err := r.Rdb.Get(r.ctx, playerid).Result()
 	if err != nil {
 		panic((err))
 	}

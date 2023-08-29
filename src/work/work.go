@@ -13,7 +13,7 @@ func Homework1(abclist[]int)map[int]int  {
 	for _, v := range abclist {
 		mapresult[v]++
 	}
-
+	
 	maxCount := 0
 	maxNumber := 0
 

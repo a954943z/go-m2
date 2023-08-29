@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"log"
+	"test1/src/count"
 	"test1/src/redistest"
 	"time"
 
@@ -136,21 +137,25 @@ type F_Bank struct {
 }
 
 func main() {
+	//初始化
+	count.Init()
 	router := gin.Default()
 	// router.GET("/test1", function1)
-	// router.POST("/test3", function3)
-	// router.POST("/test4/:gg", function4)
+	router.POST("/test3", function3)
+	router.POST("/test4/:gg", function4)
 	// function5(router)
-	GetRdb := redistest.InitRedisClinet()
-	GetRdb.Example()
+	// GetRdb := redistest.InitRedisClinet()
+	// GetRdb.Example()
 	router.GET("/test1", function1)
 	router.GET("/test2", function2)
 	router.GET("/v1/getredis", GetRedis)
 	router.POST("/v1/addredis", PostRedis)
 	router.POST("/bank", PostRedisBody)
 	router.POST("/F_bank", F_PostRedisBody)
-	router.POST("/SetValue",SetRedisValue)
-
+	router.POST("/SetValue", SetRedisValue)
+	router.POST("/CountsAPI/:playerID", CountsAPI)
+	router.POST("/CountsAPI2/:playerID", CountsAPI)
+	router.POST("/CountsAPI3/:playerID", CountsAPI)
 	// router.Use(Logger1())
 	// router.Use(Middleware1())
 
@@ -159,7 +164,24 @@ func main() {
 	// r:=gin.New()
 	// router.POST("/test8", function8)
 
-	router.Run(":8085")
+	router.Run(":8080")
+}
+
+// 8/23作業
+func CountsAPI(c *gin.Context) {
+
+	playerID := c.Param("playerID")
+	//saveData := count.Save(playerID)
+	GetRdb := redistest.InitRedisClinet()
+	data := GetRdb.PlayerCounts(playerID)
+	println(playerID)
+	println(data)
+	if data <= 10 {
+		c.JSON(200, gin.H{"playerID": playerID, "counts": data})
+	} else {
+		c.JSON(200, "不可超過十次")
+	}
+
 }
 
 // 第一題：用GET，不管內容值，只回傳OK
@@ -233,7 +255,7 @@ func SetRedisValue(c *gin.Context) {
 	var rdbsdata F_Bank
 	c.BindJSON((&rdbsdata))
 	res := GetRdb.SetValue(int64(rdbsdata.Amount), rdbsdata.PlayerID)
-	c.JSON(200,gin.H{"Blance":res })
+	c.JSON(200, gin.H{"Blance": res})
 }
 
 // 第三題：用POST，Body帶參數k1 k2，回傳json a1 a2（a1為k1的內容值，a2為k2的內容值）
