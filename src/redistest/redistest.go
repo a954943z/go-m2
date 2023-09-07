@@ -3,6 +3,7 @@ package redistest
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -39,7 +40,7 @@ func InitRedisClinet() *Client {
 	return Rdbs
 }
 
-// ()中為宣告
+// {}中為宣告
 func (r *Client) Example() int64 {
 
 	i, err := r.Rdb.Incr(r.ctx, "KKKEY").Result()
@@ -49,7 +50,7 @@ func (r *Client) Example() int64 {
 	return i
 }
 
-// ()中為宣告
+// {}中為宣告
 func (r *Client) INCRBYExample(aa int) int64 {
 
 	i, err := r.Rdb.IncrBy(r.ctx, "KKKEY", int64(aa)).Result()
@@ -59,6 +60,7 @@ func (r *Client) INCRBYExample(aa int) int64 {
 	return i
 }
 
+// 0830
 func (r *Client) PlayerCounts(playerID string) int64 {
 	i, err := r.Rdb.Incr(r.ctx, playerID).Result()
 	if err != nil {
@@ -67,6 +69,22 @@ func (r *Client) PlayerCounts(playerID string) int64 {
 	return i
 }
 
+// 0904
+func (r *Client) SetTimes(playerID string, times int) error {
+	timesStr := strconv.Itoa(times)
+	err := r.Rdb.SetEx(r.ctx, playerID, timesStr, 60).Err()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("OK")
+	return nil
+}
+func(r *Client) SetNX(){
+	
+}
+
+
+// 0823
 func (q *Client) INCRBYbank(amount int, playerid string) int64 {
 	i, err := q.Rdb.IncrBy(q.ctx, playerid, int64(amount)).Result()
 	if err != nil {

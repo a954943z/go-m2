@@ -176,6 +176,14 @@ func CountsAPI(c *gin.Context) {
 	data := GetRdb.PlayerCounts(playerID)
 	println(playerID)
 	println(data)
+
+	// 調用 SetTimes 函數，設置計時器，60 表示 60 秒
+	timesUp := GetRdb.SetTimes(playerID, 10)
+	if timesUp != nil {
+		c.JSON(500, gin.H{"error": "無法設置計時器"})
+		return
+	}
+
 	if data <= 10 {
 		c.JSON(200, gin.H{"playerID": playerID, "counts": data})
 	} else {
